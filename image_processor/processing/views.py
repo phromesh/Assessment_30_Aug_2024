@@ -20,18 +20,15 @@ class UploadCSVView(generics.GenericAPIView):
         if not file.name.endswith('.csv'):
             return Response({'error': 'Invalid file format'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Ensure the upload directory exists
         upload_dir = os.path.join(settings.MEDIA_ROOT, 'uploads')
         if not os.path.exists(upload_dir):
             os.makedirs(upload_dir)
 
-        # Save the file
         file_path = os.path.join(upload_dir, file.name)
         with default_storage.open(file_path, 'wb+') as destination:
             for chunk in file.chunks():
                 destination.write(chunk)
 
-        # Process the file
         request_id = uuid.uuid4()
         processing_request = ImageProcessing.objects.create(request_id=request_id)
         process_images.delay(file_path, str(request_id))
