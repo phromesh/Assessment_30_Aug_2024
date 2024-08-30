@@ -10,3 +10,7 @@ class ProcessedImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProcessedImage
         fields = ['product_name', 'original_url', 'processed_image_path']
+
+class WebhookSerializer(serializers.Serializer):
+    request_id = serializers.UUIDField()
+    status = serializers.ChoiceField(choices=['completed', 'failed'])
